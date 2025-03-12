@@ -1,3 +1,4 @@
+# модули
 from aiogram import F, Router
 from aiogram.filters import Command, CommandStart
 from aiogram.types import Message, CallbackQuery
@@ -22,6 +23,7 @@ class Ask_Errors(StatesGroup):
     questions = State()
 
 
+# команды бота
 @router.message(CommandStart())
 async def start(message: Message):
     await message.answer('Здравствуй дорогой пользователь!\n\n▎ Описание бота валют Currency bot\n\nЗдравствуйте! Я ваш помощник в мире валют! 🌍\n\nЯ собираю актуальные курсы валют от различных банков, чтобы помочь вам быстро и удобно находить нужную информацию.\n\n▎ Банки представленные в боте\n\n1. Альфа Банк\n2. Беларусбанк\n3. Благропромбанк\n4. Белгазпромбанк\n5. Приорбанк\n\n▎ Как я могу помочь? \n\n- Узнайте текущие курсы валют. \n- Получите информацию о курсах от различных банков.\n- Сравните предложения и выберите лучшее. \n\n▎ Умения бота представлены в команде /help.\n\nНачните использовать меня, и вы всегда будете в курсе валютных изменений! 💱 \n\nСпасибо, что выбрали меня!')
@@ -36,6 +38,7 @@ async def one_banks(message : Message):
     await message.answer('▎ Информация о покупке/продаже валюты\n\n✨ Выберите банк для получения информации о курсах валют.\n\n📊 После нажатия на кнопку, вы получите актуальную информацию о курсах.\n\nНажмите на кнопку, чтобы продолжить!', reply_markup= kb.ask_bank)#.adjust(2))#.as_markup())
 
 
+# кнопки
 @router.callback_query(F.data == 'alpha_bank')
 async def al_bank(callback: CallbackQuery):
     await callback.answer('Прошу подождать, добавляются актуальные данные.', show_alert=True)
@@ -52,6 +55,8 @@ async def al_bank(callback: CallbackQuery):
     conn.commit()
     conn.close()
 
+
+# ответы
 @router.callback_query(F.data == 'belarusbank')
 async def al_bank(callback: CallbackQuery):
     await callback.answer('Прошу подождать, добавляются актуальные данные.', show_alert=True)
@@ -149,6 +154,7 @@ async def step_f(message : Message, state : FSMContext):
     await message.answer('Введите ваше имя.')
 
 
+# сохранеие в бд предложений пользователя
 @router.message(Ask_Offers.name)
 async def step_f(message : Message, state : FSMContext):
     await state.update_data(name = message.text)
@@ -175,7 +181,7 @@ async def step_f(message : Message, state : FSMContext):
     connection.close()
     await state.clear()
 
-
+# сохранеие в бд ошибок пользователя
 @router.message(Command('error'))
 async def step_f(message : Message, state : FSMContext):
     await state.set_state(Ask_Errors.name)

@@ -1,7 +1,8 @@
+# модуль
 import sqlite3
 
 
-
+# бд
 def main():
     connection = sqlite3.connect('myfin.db')
     cursor = connection.cursor()

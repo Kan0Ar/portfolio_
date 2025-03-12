@@ -1,10 +1,11 @@
+# импорт модулей
 import requests
 from bs4 import BeautifulSoup
 import sqlite3
 from time import sleep
 
+# headers, cookies и тд(curl)
 
-headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36'}
 items = []
 
 params = {
@@ -59,34 +60,39 @@ headers = {
 }
 
 def not_main():
+    # парсинг всех страниц
     for value in range(1, 8):
         url = f'https://www.amazon.com/s?k=gaming+hats&page={value}&_encoding=UTF8&content-id=amzn1.sym.09483392-9ac6-434a-a3d7-39d83662f54a&dib=eyJ2IjoiMSJ9.XAVI1LfPyXm7gKIfg0vGsSnLdd150_C-evnHFTTx2DGpwcdeU8y_7SwJXVnuBuUs7C2GH7V0F9KBlSKVQvM_ZtTy7AUDlsaIpWp3NmzbFQ02xCLRhPAcWX1wSmrBTYrgesEx24y6DHPCPf2kLifGO-jEwvnDCqlO5rtbjfYAModpswje2DChGTMbaNiyJnketm-JfIgTI1Y2uSZ6GRb20eUNRyYXbTJpchfRtp6pDkKpoTRDkkcGbLPqXFwMrvglcAxHhaZauVzoh5lCp9r73lsf5P8BA2HcuAdKpqltbo8.x2zyJJRJKA5ytobXzFd8M9pH4bJWucDimp7VfHba02E&dib_tag=se&pd_rd_r=87035633-56f9-4120-8390-e0c58a8f1dc4&pd_rd_w=UALxS&pd_rd_wg=Gf3dK&qid=1741179835&refresh=1&sr=8-1&xpid=mNrmTK10XfHyd&ref=sr_pg_2'
         response = requests.get(url=url, headers=headers, params=params, cookies=cookies)
         links = []
         soup = BeautifulSoup(response.text, 'lxml')
+        # сбор ссылок карточек
         data = soup.find('div', class_="s-main-slot s-result-list s-search-results sg-row")
         card = data.find_all('div', role="listitem")
         for c in card:
             try:
                 link = 'https://www.amazon.com' + c.find('a', class_="a-link-normal s-line-clamp-4 s-link-style a-text-normal").get('href')
+                # сохранение ссылок в список
                 links.append(link)
             except AttributeError:
                 continue
 
+        # парсинг информации с карточек
         for l in links:
-            sleep(2)
+            sleep(2) # перерывы
             response = requests.get(url=l, headers=headers, params=params, cookies=cookies)
             soup = BeautifulSoup(response.text, 'lxml')
 
             print(f'Обработка ссылки {l}\n\n')
 
-
+            # сбор названий товаров
             try:
                 name = soup.find('span', id="productTitle").text.strip()
             except AttributeError:
                 name = 'None'
 
 
+            # сбор цен товаров
             try:
                 try:
                     price = soup.find('span', class_="a-price aok-align-center reinventPricePriceToPayMargin priceToPay").text.strip()
@@ -98,6 +104,7 @@ def not_main():
                 price = 'None'
 
 
+            # сбор рейтинга товаров
             try:
                 pre_raiting = soup.find('span', id="acrPopover", class_="reviewCountTextLinkedHistogram noUnderline")
                 raiting = pre_raiting.find('span', class_="a-size-base a-color-base").text.strip()
@@ -105,12 +112,14 @@ def not_main():
                 raiting = 'None'
 
 
+            # сбор кол-ва отзывов
             try:
                 assessments = soup.find('span', id="acrCustomerReviewText").text
             except AttributeError:
                 assessments = 'None'
 
 
+            # сбор информации о товаре
             try:
                 try:
                     about_item = soup.find('div', id="feature-bullets", class_="a-section a-spacing-medium a-spacing-top-small").text.strip()
@@ -120,6 +129,7 @@ def not_main():
                 about_item = 'None'
 
 
+            # сбор артикулов(ASIN) товара
             try:
                 data = soup.find('table', id="productDetails_detailBullets_sections1")
                 articul_pref = data.find_all('tr')[-5]
@@ -136,10 +146,12 @@ def not_main():
                     else:
                         continue
 
-
+            
+            # сохранение всей информации в список
             items.append((name, price, raiting, assessments, about_item, articul, l))
 
 
+# база данных 
 def sqlition():
     connection = sqlite3.connect('amazon.db')
     cursor = connection.cursor()
@@ -156,6 +168,8 @@ def sqlition():
     """)
     connection.close()
 
+
+# сохранение информации в базу данных
 def main():
     sqlition()
     not_main()
@@ -170,6 +184,6 @@ def main():
 
 
 
-
+# запуск
 if __name__ == '__main__':
     main()

@@ -1,16 +1,17 @@
+# модули
 import asyncio
 from aiogram import Bot, Dispatcher
 
 from app.handlers import router
 
-import logging
+import logging # модуль для тестов 
 
-from settings import TOKEN
+from settings import TOKEN # добавить ключ
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
-
+# подключение
 async def main():
     dp.include_router(router)
     await dp.start_polling(bot)

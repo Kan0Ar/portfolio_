@@ -1,12 +1,16 @@
+# модули
 import requests
 from bs4 import BeautifulSoup
 import sqlite3
 
+# списки, headers
 links = []
 vall = []
 
 headers  = {'User_Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'}
 
+
+# сбор информации банков
 def settings_v():
     url = 'https://myfin.by/currency/minsk'
     response = requests.get(url, headers=headers)
@@ -16,6 +20,8 @@ def settings_v():
         data = soup.find('tr', class_='currencies-courses__row-main', id=f'bank-row-{i}')
         links.append(data)
 
+
+# подключение к бд
 def connection():
     connection = sqlite3.connect('myfin.db')
     cursor = connection.cursor()
@@ -24,6 +30,8 @@ def connection():
     connection.commit()
     connection.close()
 
+
+# обновление полученной информации от банков
 def conn():
     connection = sqlite3.connect('myfin.db')
     cursor = connection.cursor()
@@ -37,6 +45,8 @@ def conn():
     connection.close()
 
 
+
+# добавление информации
 def get_n_v():
     settings_v()
     for l in links:
@@ -45,11 +55,12 @@ def get_n_v():
         vall.append([name, vals[0].text, vals[1].text, vals[2].text, vals[3].text, vals[4].text, vals[5].text])
 
 
+# обновление бд
 def updating_db():
     get_n_v()
     conn()
 
-
+# создание бд
 def make_db():
     get_n_v()
     connection()

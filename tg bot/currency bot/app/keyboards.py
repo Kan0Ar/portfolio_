@@ -1,8 +1,10 @@
+# модули
 from aiogram.types import (ReplyKeyboardMarkup, KeyboardButton,
                            InlineKeyboardButton, InlineKeyboardMarkup)
 from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
 
 
+# клавиатура reply
 main = ReplyKeyboardMarkup(keyboard=
                            [[KeyboardButton(text='Вывод определенного банка')],
                            [KeyboardButton(text='Вывод всех банков')]],
@@ -10,6 +12,7 @@ main = ReplyKeyboardMarkup(keyboard=
                             input_field_placeholder='Выберите банк...')
 
 
+# клавиатура inline
 ask_bank = InlineKeyboardMarkup(inline_keyboard=[
                                 [InlineKeyboardButton(text='Альфа Банк', callback_data='alpha_bank'),
                                 InlineKeyboardButton(text='Беларусбанк', callback_data='belarusbank')],
