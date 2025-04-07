@@ -133,7 +133,7 @@ def main():
             try:
                 description = desc.find('span', class_="a-text-italic").text.strip()
             except AttributeError:
-                description = desc.find('div', class_="a-expander-content a-expander-partial-collapse-content")
+                description = desc.find('div', class_="a-expander-content a-expander-partial-collapse-content").text.strip()
         except AttributeError:
             description = desc.find('span', class_="a-text-bold").text.strip()
 
